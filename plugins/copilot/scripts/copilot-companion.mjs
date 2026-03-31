@@ -10,6 +10,7 @@ import { parseArgs, splitRawArgumentString } from "./lib/args.mjs";
 import {
     getCopilotAvailability,
     getCopilotAuthStatus,
+    MODEL_ALIASES,
     parseStructuredOutput,
     readOutputSchema,
     runCopilotReview,
@@ -59,11 +60,6 @@ const ROOT_DIR = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const REVIEW_SCHEMA = path.join(ROOT_DIR, "schemas", "review-output.schema.json");
 const DEFAULT_STATUS_WAIT_TIMEOUT_MS = 240000;
 const DEFAULT_STATUS_POLL_INTERVAL_MS = 2000;
-const MODEL_ALIASES = new Map([
-  ["opus", "claude-opus-4-5"],
-  ["sonnet", "claude-sonnet-4-5"],
-  ["codex", "gpt-5.2-codex"]
-]);
 const STOP_REVIEW_TASK_MARKER = "Run a stop-gate review of the previous Claude turn.";
 
 function printUsage() {
@@ -249,7 +245,7 @@ function buildNativeReviewTarget(target) {
 function validateNativeReviewRequest(target, focusText) {
   if (focusText.trim()) {
     throw new Error(
-      `/copilot:review does not support custom focus text. Retry with \`/copilot:adversarial-review ${focusText.trim()}\` for focused review instructions.`
+      `The /copilot:review command does not support custom focus text. Retry with \`/copilot:adversarial-review ${focusText.trim()}\` for focused review instructions.`
     );
   }
 
@@ -401,18 +397,7 @@ async function executeTaskRun(request) {
 
   const rawOutput = typeof result.finalMessage === "string" ? result.finalMessage : "";
   const failureMessage = result.error?.message ?? result.stderr ?? "";
-  const rendered = renderTaskResult(
-    {
-      rawOutput,
-      failureMessage,
-      reasoningSummary: result.reasoningSummary
-    },
-    {
-      title: taskMetadata.title,
-      jobId: request.jobId ?? null,
-      write: Boolean(request.write)
-    }
-  );
+  const rendered = renderTaskResult({ rawOutput, failureMessage });
   const payload = {
     status: result.status,
     rawOutput,
@@ -744,7 +729,7 @@ async function handleStatus(argv) {
   }
 
   if (options.wait) {
-    throw new Error("`status --wait` requires a job id.");
+    throw new Error("The `status --wait` flag requires a job id.");
   }
 
   const report = buildStatusSnapshot(cwd, { all: options.all });
@@ -851,7 +836,7 @@ async function main() {
       await handleCancel(argv);
       break;
     default:
-      throw new Error(`Unknown subcommand: ${subcommand}`);
+      throw new Error(`Unknown subcommand: ${subcommand}.`);
   }
 }
 

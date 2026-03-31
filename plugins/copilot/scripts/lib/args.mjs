@@ -36,7 +36,7 @@ export function parseArgs(argv, config = {}) {
       if (valueOptions.has(key)) {
         const nextValue = inlineValue ?? argv[index + 1];
         if (nextValue === undefined) {
-          throw new Error(`Missing value for --${rawKey}`);
+          throw new Error(`Missing value for --${rawKey}.`);
         }
         options[key] = nextValue;
         if (inlineValue === undefined) {
@@ -60,7 +60,7 @@ export function parseArgs(argv, config = {}) {
     if (valueOptions.has(key)) {
       const nextValue = argv[index + 1];
       if (nextValue === undefined) {
-        throw new Error(`Missing value for -${shortKey}`);
+        throw new Error(`Missing value for -${shortKey}.`);
       }
       options[key] = nextValue;
       index += 1;

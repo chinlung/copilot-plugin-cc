@@ -297,13 +297,13 @@ export function renderNativeReviewResult(result, meta) {
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
-export function renderTaskResult(parsedResult) {
-  const rawOutput = typeof parsedResult?.rawOutput === "string" ? parsedResult.rawOutput : "";
-  if (rawOutput) {
-    return rawOutput.endsWith("\n") ? rawOutput : `${rawOutput}\n`;
+export function renderTaskResult({ rawOutput, failureMessage } = {}) {
+  const output = typeof rawOutput === "string" ? rawOutput : "";
+  if (output) {
+    return output.endsWith("\n") ? output : `${output}\n`;
   }
 
-  const message = String(parsedResult?.failureMessage ?? "").trim() || "Copilot did not return a final message.";
+  const message = String(failureMessage ?? "").trim() || "Copilot did not return a final message.";
   return `${message}\n`;
 }
 
