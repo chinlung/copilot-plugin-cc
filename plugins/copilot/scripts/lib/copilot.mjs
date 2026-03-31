@@ -107,7 +107,6 @@ export async function runCopilotReview(cwd, options = {}) {
 
   const result = await spawnCopilot(cwd, {
     prompt,
-    agent: "code-review",
     model: resolveModel(options.model),
     outputFormat: "json",
     noAskUser: true,
@@ -180,7 +179,6 @@ export async function runCopilotTask(cwd, options = {}) {
 
   const result = await spawnCopilot(cwd, {
     prompt,
-    agent: "task",
     model: resolveModel(options.model),
     noAskUser: true,
     allowAll,
