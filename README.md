@@ -124,20 +124,20 @@ Use it when you want Copilot to:
 
 - investigate a bug
 - try a fix
-- continue a previous Copilot task
+- implement a feature or refactor
 
 > [!NOTE]
 > Depending on the task these tasks might take a long time and it's generally recommended to force the task to be in the background or move the agent to the background.
 
-It supports `--background`, `--wait`, `--resume`, and `--fresh`. If you omit `--resume` and `--fresh`, the plugin can offer to continue the latest rescue thread for this repo.
+It supports `--background`, `--wait`, and `--model <model>`.
 
 Examples:
 
 ```bash
 /copilot:rescue investigate why the tests started failing
 /copilot:rescue fix the failing test with the smallest safe patch
-/copilot:rescue --resume apply the top fix from the last run
 /copilot:rescue --background investigate the regression
+/copilot:rescue --model claude-opus-4-5 refactor the auth module
 ```
 
 ### `/copilot:status`

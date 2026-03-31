@@ -166,10 +166,10 @@ function buildSetupReport(cwd, actionsTaken = []) {
 
   const nextSteps = [];
   if (!copilotStatus.available) {
-    nextSteps.push("Install GitHub Copilot CLI with `npm install -g @githubnext/github-copilot-cli`.");
+    nextSteps.push("Install GitHub Copilot CLI with `npm install -g @github/copilot`.");
   }
   if (copilotStatus.available && !authStatus.loggedIn) {
-    nextSteps.push("Set the GITHUB_TOKEN or COPILOT_TOKEN environment variable for authentication.");
+    nextSteps.push("Set COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN environment variable for authentication.");
   }
   if (!config.stopReviewGate) {
     nextSteps.push("Optional: run `/copilot:setup --enable-review-gate` to require a fresh review before stop.");
@@ -230,7 +230,7 @@ function ensureCopilotReady(cwd) {
   }
   const authStatus = getCopilotAuthStatus(cwd);
   if (!authStatus.loggedIn) {
-    throw new Error("GitHub Copilot is not authenticated. Set the GITHUB_TOKEN or COPILOT_TOKEN environment variable and retry.");
+    throw new Error("GitHub Copilot is not authenticated. Set COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN environment variable and retry.");
   }
 }
 

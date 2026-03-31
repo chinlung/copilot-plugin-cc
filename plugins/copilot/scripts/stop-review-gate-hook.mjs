@@ -63,7 +63,7 @@ function buildSetupNote(cwd) {
   }
 
   const detail = authStatus.detail ? ` ${authStatus.detail}.` : "";
-  return `Copilot is not set up for the review gate.${detail} Set the GITHUB_TOKEN or COPILOT_TOKEN environment variable and run /copilot:setup.`;
+  return `Copilot is not set up for the review gate.${detail} Set COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN environment variable and run /copilot:setup.`;
 }
 
 function parseStopReviewOutput(rawOutput) {
