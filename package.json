@@ -1,5 +1,5 @@
 {
-  "name": "@github/copilot-plugin-cc",
+  "name": "copilot-plugin-cc",
   "version": "1.0.1",
   "private": true,
   "type": "module",

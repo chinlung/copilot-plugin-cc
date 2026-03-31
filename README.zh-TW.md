@@ -35,13 +35,13 @@
 在 Claude Code 中加入 marketplace：
 
 ```bash
-/plugin marketplace add github/copilot-plugin-cc
+/plugin marketplace add chinlung/copilot-plugin-cc
 ```
 
 安裝插件：
 
 ```bash
-/plugin install copilot@github-copilot
+/plugin install copilot@chinlung-copilot-plugin-cc
 ```
 
 重新載入插件：

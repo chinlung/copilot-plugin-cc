@@ -36,13 +36,13 @@ Key changes from the upstream project:
 Add the marketplace in Claude Code:
 
 ```bash
-/plugin marketplace add github/copilot-plugin-cc
+/plugin marketplace add chinlung/copilot-plugin-cc
 ```
 
 Install the plugin:
 
 ```bash
-/plugin install copilot@github-copilot
+/plugin install copilot@chinlung-copilot-plugin-cc
 ```
 
 Reload plugins:
