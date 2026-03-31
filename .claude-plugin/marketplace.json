@@ -1,0 +1,17 @@
+{
+  "name": "copilot-plugin-cc",
+  "owner": {
+    "name": "chinlung"
+  },
+  "metadata": {
+    "description": "Use GitHub Copilot from Claude Code to review code or delegate tasks."
+  },
+  "plugins": [
+    {
+      "name": "copilot",
+      "source": "./plugins/copilot",
+      "description": "Use GitHub Copilot from Claude Code to review code or delegate tasks.",
+      "version": "1.0.0"
+    }
+  ]
+}
