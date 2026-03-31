@@ -84,9 +84,9 @@ function runStopReview(cwd, input = {}) {
     };
   }
 
+  let payload;
   try {
-    const payload = JSON.parse(result.stdout);
-    return parseStopReviewOutput(payload?.rawOutput);
+    payload = JSON.parse(result.stdout);
   } catch {
     return {
       ok: false,
@@ -94,6 +94,7 @@ function runStopReview(cwd, input = {}) {
         "The stop-time Copilot review task returned invalid JSON. Run /copilot:review --wait manually or bypass the gate."
     };
   }
+  return parseStopReviewOutput(payload?.rawOutput);
 }
 
 function main() {

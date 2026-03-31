@@ -4,7 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { buildEnv, installFakeCopilot } from "./fake-copilot-fixture.mjs";
-import { makeTempDir } from "./helpers.mjs";
+import { makeTempDir, withEnv } from "./helpers.mjs";
 
 const ROOT = path.resolve(new URL(".", import.meta.url).pathname, "..");
 
@@ -18,25 +18,9 @@ function readFakeState(binDir) {
 }
 
 function withFakeCopilot(fn) {
-  return async () => {
-    const binDir = makeTempDir();
-    installFakeCopilot(binDir);
-    const env = buildEnv(binDir);
-
-    const originalEnv = { ...process.env };
-    Object.assign(process.env, env);
-    try {
-      await fn(binDir);
-    } finally {
-      for (const key of Object.keys(env)) {
-        if (originalEnv[key] === undefined) {
-          delete process.env[key];
-        } else {
-          process.env[key] = originalEnv[key];
-        }
-      }
-    }
-  };
+  const binDir = makeTempDir();
+  installFakeCopilot(binDir);
+  return withEnv(buildEnv(binDir), () => fn(binDir));
 }
 
 test(

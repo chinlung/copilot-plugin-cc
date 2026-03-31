@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { buildEnv, installFakeCopilot } from "./fake-copilot-fixture.mjs";
-import { makeTempDir } from "./helpers.mjs";
+import { makeTempDir, withEnv } from "./helpers.mjs";
 
 const ROOT = path.resolve(new URL(".", import.meta.url).pathname, "..");
 const PLUGIN_ROOT = path.join(ROOT, "plugins", "copilot");
@@ -76,32 +76,21 @@ test("parseStopReviewOutput: multiline BLOCK uses first line reason", () => {
 
 // --- buildSetupNote ---
 
-function withEnv(envOverrides, fn) {
-  return () => {
-    const originalEnv = { ...process.env };
-    // Remove token vars so tests control auth state explicitly
-    delete process.env.COPILOT_GITHUB_TOKEN;
-    delete process.env.GH_TOKEN;
-    delete process.env.GITHUB_TOKEN;
-    Object.assign(process.env, envOverrides);
-    try {
-      return fn();
-    } finally {
-      for (const key of Object.keys(process.env)) {
-        if (originalEnv[key] === undefined) {
-          delete process.env[key];
-        } else {
-          process.env[key] = originalEnv[key];
-        }
-      }
-    }
-  };
+// Clear token vars so tests control auth state explicitly, then apply overrides.
+const TOKEN_VARS_CLEARED = {
+  COPILOT_GITHUB_TOKEN: undefined,
+  GH_TOKEN: undefined,
+  GITHUB_TOKEN: undefined
+};
+
+function withAuthEnv(envOverrides, fn) {
+  return withEnv({ ...TOKEN_VARS_CLEARED, ...envOverrides }, fn);
 }
 
 test("buildSetupNote: returns null when authenticated", () => {
   const binDir = makeTempDir();
   installFakeCopilot(binDir);
-  withEnv(buildEnv(binDir), () => {
+  withAuthEnv(buildEnv(binDir), () => {
     const note = buildSetupNote(binDir);
     assert.equal(note, null);
   })();
@@ -110,7 +99,7 @@ test("buildSetupNote: returns null when authenticated", () => {
 test("buildSetupNote: returns error message when not authenticated", () => {
   const binDir = makeTempDir();
   installFakeCopilot(binDir);
-  withEnv({ PATH: `${binDir}:${process.env.PATH}` }, () => {
+  withAuthEnv({ PATH: `${binDir}:${process.env.PATH}` }, () => {
     const note = buildSetupNote(binDir);
     assert.ok(note);
     assert.match(note, /not set up for the review gate/);

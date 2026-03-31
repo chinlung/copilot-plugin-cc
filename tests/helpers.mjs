@@ -20,6 +20,40 @@ export function run(command, args, options = {}) {
   });
 }
 
+/**
+ * Run `fn` with `envOverrides` merged into `process.env`, then restore the
+ * entire original environment — including deleting keys that did not exist
+ * before and reinstating keys that the test body may have removed.
+ * Works with both sync and async `fn`.
+ *
+ * Keys whose value is `undefined` in `envOverrides` are deleted from the env
+ * before calling `fn`, and restored afterwards.
+ */
+export function withEnv(envOverrides, fn) {
+  return async () => {
+    const originalEnv = { ...process.env };
+    for (const [key, value] of Object.entries(envOverrides)) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    try {
+      return await fn();
+    } finally {
+      // Restore every key we touched back to its original state.
+      for (const key of Object.keys(envOverrides)) {
+        if (originalEnv[key] === undefined) {
+          delete process.env[key];
+        } else {
+          process.env[key] = originalEnv[key];
+        }
+      }
+    }
+  };
+}
+
 export function initGitRepo(cwd) {
   run("git", ["init", "-b", "main"], { cwd });
   run("git", ["config", "user.name", "Copilot Plugin Tests"], { cwd });

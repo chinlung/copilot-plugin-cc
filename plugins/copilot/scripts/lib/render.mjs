@@ -300,7 +300,7 @@ export function renderNativeReviewResult(result, meta) {
 export function renderTaskResult({ rawOutput, failureMessage } = {}) {
   const output = typeof rawOutput === "string" ? rawOutput : "";
   if (output) {
-    return output.endsWith("\n") ? output : `${output}\n`;
+    return ensureTrailingNewline(output);
   }
 
   const message = String(failureMessage ?? "").trim() || "Copilot did not return a final message.";
@@ -371,10 +371,13 @@ export function renderJobStatusReport(job) {
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
+function ensureTrailingNewline(text) {
+  return text.endsWith("\n") ? text : `${text}\n`;
+}
+
 export function renderStoredJobResult(job, storedJob) {
   if (isStructuredReviewStoredResult(storedJob) && storedJob?.rendered) {
-    const output = storedJob.rendered.endsWith("\n") ? storedJob.rendered : `${storedJob.rendered}\n`;
-    return output;
+    return ensureTrailingNewline(storedJob.rendered);
   }
 
   const rawOutput =
@@ -382,13 +385,11 @@ export function renderStoredJobResult(job, storedJob) {
     (typeof storedJob?.result?.copilot?.stdout === "string" && storedJob.result.copilot.stdout) ||
     "";
   if (rawOutput) {
-    const output = rawOutput.endsWith("\n") ? rawOutput : `${rawOutput}\n`;
-    return output;
+    return ensureTrailingNewline(rawOutput);
   }
 
   if (storedJob?.rendered) {
-    const output = storedJob.rendered.endsWith("\n") ? storedJob.rendered : `${storedJob.rendered}\n`;
-    return output;
+    return ensureTrailingNewline(storedJob.rendered);
   }
 
   const lines = [
