@@ -24,6 +24,11 @@ function saveState(state) {
 
 const args = process.argv.slice(2);
 
+if (BEHAVIOR === "unavailable") {
+  console.error("copilot: command not found");
+  process.exit(127);
+}
+
 if (args[0] === "--version") {
   console.log("copilot-cli test");
   process.exit(0);
@@ -52,11 +57,6 @@ for (let i = 0; i < args.length; i++) {
 state.lastPrompt = prompt;
 state.lastSystem = system;
 saveState(state);
-
-if (BEHAVIOR === "unavailable") {
-  console.error("copilot: command not found");
-  process.exit(127);
-}
 
 if (BEHAVIOR === "auth-failed") {
   console.error("authentication failed: no valid token found");

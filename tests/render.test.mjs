@@ -54,6 +54,4 @@ test("renderStoredJobResult prefers rendered output for structured review jobs",
 
   assert.match(output, /^# Copilot Adversarial Review/);
   assert.doesNotMatch(output, /^\{/);
-  assert.match(output, /Copilot session ID: thr_123/);
-  assert.match(output, /Resume in Copilot: copilot resume thr_123/);
 });

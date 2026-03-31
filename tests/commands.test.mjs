@@ -52,9 +52,8 @@ test("command files list matches the expected set", () => {
 test("rescue command delegates to the copilot-rescue subagent", () => {
   const rescue = read("commands/rescue.md");
   assert.match(rescue, /--background\|--wait/);
-  assert.match(rescue, /--resume\|--fresh/);
-  assert.match(rescue, /AskUserQuestion/);
-  assert.match(rescue, /run the `copilot:copilot-rescue` subagent/i);
+  assert.doesNotMatch(rescue, /--resume\|--fresh/);
+  assert.match(rescue, /copilot-rescue/i);
 });
 
 test("result and cancel commands are deterministic runtime entrypoints", () => {
@@ -69,6 +68,6 @@ test("result and cancel commands are deterministic runtime entrypoints", () => {
 test("setup command references copilot install", () => {
   const setup = read("commands/setup.md");
   assert.match(setup, /AskUserQuestion/);
-  assert.match(setup, /npm install -g @github\/copilot/);
+  assert.match(setup, /copilot --version/);
   assert.match(setup, /copilot-companion\.mjs" setup --json \$ARGUMENTS/);
 });

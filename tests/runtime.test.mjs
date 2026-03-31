@@ -33,7 +33,7 @@ test("setup detects when copilot is unavailable", () => {
     cwd: ROOT,
     env: {
       ...process.env,
-      PATH: binDir,
+      PATH: `${binDir}:${process.env.PATH}`,
       COPILOT_GITHUB_TOKEN: "fake-token"
     }
   });
