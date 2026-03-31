@@ -27,7 +27,12 @@ function readHookInput() {
   if (!raw) {
     return {};
   }
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    process.stderr.write("Copilot companion: failed to parse hook input.\n");
+    return {};
+  }
 }
 
 function emitDecision(payload) {
@@ -121,6 +126,7 @@ function main() {
     return;
   }
 
+  logNote("Copilot stop-time review gate running...");
   const review = runStopReview(cwd, input);
   if (!review.ok) {
     emitDecision({
@@ -130,6 +136,7 @@ function main() {
     return;
   }
 
+  logNote("Copilot stop-time review: ALLOW — no issues found.");
   logNote(runningTaskNote);
 }
 

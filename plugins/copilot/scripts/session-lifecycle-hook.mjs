@@ -15,7 +15,12 @@ function readHookInput() {
   if (!raw) {
     return {};
   }
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    process.stderr.write("Copilot companion: failed to parse hook input.\n");
+    return {};
+  }
 }
 
 function shellEscape(value) {
@@ -64,9 +69,27 @@ function cleanupSessionJobs(cwd, sessionId) {
   });
 }
 
+function emitHookOutput(payload) {
+  process.stdout.write(`${JSON.stringify(payload)}\n`);
+}
+
 function handleSessionStart(input) {
   appendEnvVar(SESSION_ID_ENV, input.session_id);
   appendEnvVar(PLUGIN_DATA_ENV, process.env[PLUGIN_DATA_ENV]);
+
+  const sessionId = input.session_id ?? null;
+  const parts = ["Copilot companion plugin is active."];
+  if (sessionId) {
+    parts.push(`Session: ${sessionId}.`);
+  }
+  parts.push("Use /copilot:setup to check readiness.");
+
+  emitHookOutput({
+    hookSpecificOutput: {
+      hookEventName: "SessionStart",
+      additionalContext: parts.join(" ")
+    }
+  });
 }
 
 function handleSessionEnd(input) {
