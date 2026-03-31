@@ -148,7 +148,7 @@ npm install -g @github/copilot
 /copilot:rescue investigate why the tests started failing
 /copilot:rescue fix the failing test with the smallest safe patch
 /copilot:rescue --background investigate the regression
-/copilot:rescue --model claude-opus-4-5 refactor the auth module
+/copilot:rescue --model claude-opus-4.5 refactor the auth module
 /copilot:rescue --continue fix the remaining issues
 /copilot:rescue --resume abc123 apply the suggested fix
 /copilot:rescue --autopilot implement the full feature

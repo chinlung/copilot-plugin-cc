@@ -7,8 +7,8 @@ import { binaryAvailable } from "./process.mjs";
 import { spawnCopilot } from "./copilot-runner.mjs";
 
 const MODEL_ALIASES = new Map([
-  ["opus", "claude-opus-4-5"],
-  ["sonnet", "claude-sonnet-4-5"],
+  ["opus", "claude-opus-4.5"],
+  ["sonnet", "claude-sonnet-4.5"],
   ["codex", "gpt-5.2-codex"]
 ]);
 

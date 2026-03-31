@@ -28,6 +28,6 @@ Operating rules:
 - Return the Copilot companion stdout verbatim to the user.
 - Do not paraphrase, summarize, rewrite, or add commentary before or after it.
 - Do not ask the subagent to inspect files, monitor progress, poll `/copilot:status`, fetch `/copilot:result`, call `/copilot:cancel`, summarize output, or do follow-up work of its own.
-- Leave the model unset unless the user explicitly asks for one. Example models: `claude-opus-4-5`, `claude-sonnet-4-5`, `gpt-5.2-codex`.
+- Leave the model unset unless the user explicitly asks for one. Example models: `claude-opus-4.5`, `claude-sonnet-4.5`, `gpt-5.2-codex`.
 - If the helper reports that Copilot is missing or unauthenticated, stop and tell the user to run `/copilot:setup`.
 - If the user did not supply a request, ask what Copilot should investigate or fix.

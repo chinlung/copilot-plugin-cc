@@ -74,9 +74,9 @@ test(
 test(
   "spawnCopilot: passes --model flag",
   withFakeCopilot(async (binDir) => {
-    await spawnCopilot(binDir, { prompt: "hello", model: "claude-sonnet-4-5" });
+    await spawnCopilot(binDir, { prompt: "hello", model: "claude-sonnet-4.5" });
     const state = readFakeState(binDir);
-    assert.ok(state.lastArgs.includes("--model=claude-sonnet-4-5"));
+    assert.ok(state.lastArgs.includes("--model=claude-sonnet-4.5"));
   })
 );
 

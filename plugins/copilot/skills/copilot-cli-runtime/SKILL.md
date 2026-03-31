@@ -19,7 +19,7 @@ Execution rules:
 - You may use the `copilot-prompting` skill to rewrite the user's request into a tighter Copilot prompt before the single `task` call.
 - That prompt drafting is the only Claude-side work allowed. Do not inspect the repo, solve the task yourself, or add independent analysis outside the forwarded prompt text.
 - Leave model unset by default. Add `--model` only when the user explicitly asks for one.
-- Available models: `claude-opus-4-5`, `claude-sonnet-4-5`, `gpt-5.2-codex`.
+- Available models: `claude-opus-4.5`, `claude-sonnet-4.5`, `gpt-5.2-codex`.
 - `--resume <session-id>` to resume a specific session.
 - `--continue` to resume the most recent session.
 - `--autopilot` to enable autonomous continuation.
