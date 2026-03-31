@@ -69,7 +69,7 @@ function printUsage() {
       "  node scripts/copilot-companion.mjs setup [--enable-review-gate|--disable-review-gate] [--json]",
       "  node scripts/copilot-companion.mjs review [--wait|--background] [--base <ref>] [--scope <auto|working-tree|branch>]",
       "  node scripts/copilot-companion.mjs adversarial-review [--wait|--background] [--base <ref>] [--scope <auto|working-tree|branch>] [focus text]",
-      "  node scripts/copilot-companion.mjs task [--background] [--write] [--model <model>] [prompt]",
+      "  node scripts/copilot-companion.mjs task [--background] [--write] [--model <model>] [--resume <id>] [--continue] [--autopilot] [--max-autopilot-continues <n>] [--share <path>] [--share-gist] [prompt]",
       "  node scripts/copilot-companion.mjs status [job-id] [--all] [--json]",
       "  node scripts/copilot-companion.mjs result [job-id] [--json]",
       "  node scripts/copilot-companion.mjs cancel [job-id] [--json]"
@@ -392,6 +392,12 @@ async function executeTaskRun(request) {
     prompt: request.prompt,
     model: request.model,
     sandbox: request.write ? "workspace-write" : "read-only",
+    sharePath: request.sharePath,
+    resume: request.resume,
+    continue: request.continue,
+    autopilot: request.autopilot,
+    maxAutopilotContinues: request.maxAutopilotContinues,
+    shareGist: request.shareGist,
     onProgress: request.onProgress
   });
 
@@ -486,13 +492,19 @@ function buildTaskJob(workspaceRoot, taskMetadata, write) {
   });
 }
 
-function buildTaskRequest({ cwd, model, prompt, write, jobId }) {
+function buildTaskRequest({ cwd, model, prompt, write, jobId, resume, continue: continueSession, autopilot, maxAutopilotContinues, sharePath, shareGist }) {
   return {
     cwd,
     model,
     prompt,
     write,
-    jobId
+    jobId,
+    resume,
+    continue: continueSession,
+    autopilot,
+    maxAutopilotContinues,
+    sharePath,
+    shareGist
   };
 }
 
@@ -617,8 +629,8 @@ async function handleReview(argv) {
 
 async function handleTask(argv) {
   const { options, positionals } = parseCommandInput(argv, {
-    valueOptions: ["model", "cwd", "prompt-file"],
-    booleanOptions: ["json", "write", "background"],
+    valueOptions: ["model", "cwd", "prompt-file", "resume", "max-autopilot-continues", "share"],
+    booleanOptions: ["json", "write", "background", "continue", "autopilot", "share-gist"],
     aliasMap: {
       m: "model"
     }
@@ -629,6 +641,12 @@ async function handleTask(argv) {
   const model = normalizeRequestedModel(options.model);
   const prompt = readTaskPrompt(cwd, options, positionals);
   const write = Boolean(options.write);
+  const resume = options.resume ?? null;
+  const continueSession = Boolean(options.continue);
+  const autopilot = Boolean(options.autopilot);
+  const maxAutopilotContinues = options["max-autopilot-continues"] ? Number(options["max-autopilot-continues"]) : null;
+  const sharePath = options.share ?? null;
+  const shareGist = Boolean(options["share-gist"]);
   const taskMetadata = buildTaskRunMetadata({ prompt });
 
   if (options.background) {
@@ -641,7 +659,13 @@ async function handleTask(argv) {
       model,
       prompt,
       write,
-      jobId: job.id
+      jobId: job.id,
+      resume,
+      continue: continueSession,
+      autopilot,
+      maxAutopilotContinues,
+      sharePath,
+      shareGist
     });
     const { payload } = enqueueBackgroundTask(cwd, job, request);
     outputCommandResult(payload, renderQueuedTaskLaunch(payload), options.json);
@@ -658,6 +682,12 @@ async function handleTask(argv) {
         prompt,
         write,
         jobId: job.id,
+        resume,
+        continue: continueSession,
+        autopilot,
+        maxAutopilotContinues,
+        sharePath,
+        shareGist,
         onProgress: progress
       }),
     { json: options.json }

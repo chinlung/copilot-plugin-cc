@@ -20,12 +20,19 @@ Execution rules:
 - That prompt drafting is the only Claude-side work allowed. Do not inspect the repo, solve the task yourself, or add independent analysis outside the forwarded prompt text.
 - Leave model unset by default. Add `--model` only when the user explicitly asks for one.
 - Available models: `claude-opus-4-5`, `claude-sonnet-4-5`, `gpt-5.2-codex`.
+- `--resume <session-id>` to resume a specific session.
+- `--continue` to resume the most recent session.
+- `--autopilot` to enable autonomous continuation.
+- `--max-autopilot-continues <n>` to limit autopilot rounds.
+- `--share <path>` to export the session transcript.
+- `--share-gist` to share the session to a GitHub gist.
 - Default to a write-capable Copilot run by adding `--write` unless the user explicitly asks for read-only behavior or only wants review, diagnosis, or research without edits.
 
 Command selection:
 - Use exactly one `task` invocation per rescue handoff.
 - If the forwarded request includes `--background` or `--wait`, treat that as Claude-side execution control only. Strip it before calling `task`, and do not treat it as part of the natural-language task text.
 - If the forwarded request includes `--model`, pass it through to `task`.
+- If the forwarded request includes `--resume`, `--continue`, `--autopilot`, `--max-autopilot-continues`, `--share`, or `--share-gist`, pass them through to `task`.
 
 Safety rules:
 - Default to write-capable Copilot work in `copilot:copilot-rescue` unless the user explicitly asks for read-only behavior.

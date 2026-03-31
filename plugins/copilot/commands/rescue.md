@@ -1,6 +1,6 @@
 ---
 description: Delegate investigation, an explicit fix request, or follow-up rescue work to the Copilot rescue subagent
-argument-hint: "[--background|--wait] [--model <model>] [what Copilot should investigate, solve, or continue]"
+argument-hint: "[--background|--wait] [--model <model>] [--resume <id>|--continue] [--autopilot] [--share <path>] [--share-gist] [task text]"
 context: fork
 allowed-tools: Bash(node:*)
 ---
@@ -18,6 +18,9 @@ Execution mode:
 - If neither flag is present, default to foreground.
 - `--background` and `--wait` are execution flags for Claude Code. Do not forward them to `task`, and do not treat them as part of the natural-language task text.
 - `--model` is a runtime-selection flag. Preserve it for the forwarded `task` call, but do not treat it as part of the natural-language task text.
+- `--resume <id>` and `--continue` are session management flags. Preserve them for the forwarded `task` call, but do not treat them as part of the natural-language task text.
+- `--autopilot` and `--max-autopilot-continues <n>` are execution control flags. Preserve them for the forwarded `task` call, but do not treat them as part of the natural-language task text.
+- `--share <path>` and `--share-gist` are output flags. Preserve them for the forwarded `task` call, but do not treat them as part of the natural-language task text.
 
 Operating rules:
 

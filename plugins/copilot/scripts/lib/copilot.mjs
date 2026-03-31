@@ -149,6 +149,11 @@ export async function runCopilotReview(cwd, options = {}) {
  * @param {ProgressReporter} [options.onProgress]
  * @param {object} [options.outputSchema]
  * @param {string} [options.sharePath]
+ * @param {string} [options.resume]
+ * @param {boolean} [options.continue]
+ * @param {boolean} [options.autopilot]
+ * @param {number} [options.maxAutopilotContinues]
+ * @param {boolean} [options.shareGist]
  * @returns {Promise<{ status: number, finalMessage: string, stderr: string, touchedFiles: string[] }>}
  */
 export async function runCopilotTask(cwd, options = {}) {
@@ -180,6 +185,11 @@ export async function runCopilotTask(cwd, options = {}) {
     noAskUser: true,
     allowAll,
     sharePath: options.sharePath,
+    resume: options.resume,
+    continue: options.continue,
+    autopilot: options.autopilot,
+    maxAutopilotContinues: options.maxAutopilotContinues,
+    shareGist: options.shareGist,
     onStderr: options.onProgress
       ? (line) => emitProgress(options.onProgress, line, "running")
       : undefined

@@ -152,5 +152,65 @@ test(
     assert.ok(!args.includes("--allow-all"));
     assert.ok(!args.some((a) => a.startsWith("--allow-tool=")));
     assert.ok(!args.some((a) => a.startsWith("--share=")));
+    assert.ok(!args.some((a) => a.startsWith("--resume")));
+    assert.ok(!args.includes("--continue"));
+    assert.ok(!args.includes("--autopilot"));
+    assert.ok(!args.some((a) => a.startsWith("--max-autopilot-continues")));
+    assert.ok(!args.includes("--share-gist"));
+  })
+);
+
+test(
+  "spawnCopilot: passes --resume flag",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "continue work", resume: "session-abc123" });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--resume=session-abc123"));
+  })
+);
+
+test(
+  "spawnCopilot: passes --continue flag",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "keep going", continue: true });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--continue"));
+  })
+);
+
+test(
+  "spawnCopilot: resume takes precedence over continue",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "work", resume: "id-123", continue: true });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--resume=id-123"));
+    assert.ok(!state.lastArgs.includes("--continue"));
+  })
+);
+
+test(
+  "spawnCopilot: passes --autopilot flag",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "implement feature", autopilot: true });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--autopilot"));
+  })
+);
+
+test(
+  "spawnCopilot: passes --max-autopilot-continues flag",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "work", autopilot: true, maxAutopilotContinues: 5 });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--max-autopilot-continues=5"));
+  })
+);
+
+test(
+  "spawnCopilot: passes --share-gist flag",
+  withFakeCopilot(async (binDir) => {
+    await spawnCopilot(binDir, { prompt: "work", shareGist: true });
+    const state = readFakeState(binDir);
+    assert.ok(state.lastArgs.includes("--share-gist"));
   })
 );

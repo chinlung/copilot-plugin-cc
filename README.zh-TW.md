@@ -14,7 +14,7 @@
 
 - **從 Codex 轉換為 GitHub Copilot** — 所有命令、代理、技能和腳本現在都以 GitHub Copilot CLI 為目標，取代原本的 Codex CLI。
 - **模型無關架構** — 支援多種模型後端（Claude Opus 4.5、Claude Sonnet 4.5、GPT-5.2 Codex），不再綁定單一供應商。
-- **簡化命令介面** — 移除了舊有旗標（`--resume`、`--fresh`、`--effort`），改為更簡潔的 `--model` 和 `--background`/`--wait` API。
+- **恢復並擴展命令介面** — 恢復了 `--resume`/`--continue` 用於 session 管理，新增 `--autopilot` 用於自主連續執行，以及 `--share`/`--share-gist` 用於 session 匯出，搭配既有的 `--model` 和 `--background`/`--wait` API。
 - **更新認證方式** — 使用 `COPILOT_GITHUB_TOKEN`、`GH_TOKEN` 或 `GITHUB_TOKEN` 進行彈性的 GitHub 認證。
 
 ## 功能概覽
@@ -140,7 +140,7 @@ npm install -g @github/copilot
 > [!NOTE]
 > 根據任務性質，這些任務可能需要很長時間，建議強制在背景執行或將代理移至背景。
 
-支援 `--background`、`--wait` 和 `--model <model>`。
+支援 `--background`、`--wait`、`--model <model>`、`--resume <id>`、`--continue`、`--autopilot`、`--max-autopilot-continues <n>`、`--share <path>` 和 `--share-gist`。
 
 範例：
 
@@ -149,6 +149,10 @@ npm install -g @github/copilot
 /copilot:rescue fix the failing test with the smallest safe patch
 /copilot:rescue --background investigate the regression
 /copilot:rescue --model claude-opus-4-5 refactor the auth module
+/copilot:rescue --continue fix the remaining issues
+/copilot:rescue --resume abc123 apply the suggested fix
+/copilot:rescue --autopilot implement the full feature
+/copilot:rescue --share /tmp/session.md investigate the regression
 ```
 
 ### `/copilot:status`

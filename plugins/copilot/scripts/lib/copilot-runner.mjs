@@ -14,6 +14,11 @@ import process from "node:process";
  * @param {boolean} [options.allowAll] - Allow all permissions
  * @param {boolean} [options.noAskUser] - Prevent agent from asking questions (default true)
  * @param {string} [options.sharePath] - Export transcript to file
+ * @param {string} [options.resume] - Resume a specific session by ID
+ * @param {boolean} [options.continue] - Continue the most recent session
+ * @param {boolean} [options.autopilot] - Enable autopilot mode
+ * @param {number} [options.maxAutopilotContinues] - Max autopilot continuation rounds
+ * @param {boolean} [options.shareGist] - Share transcript as a GitHub gist
  * @param {number} [options.timeoutMs] - Timeout in ms
  * @param {AbortSignal} [options.signal] - AbortSignal for cancellation
  * @param {(line: string) => void} [options.onStderr] - stderr line callback
@@ -54,6 +59,24 @@ export async function spawnCopilot(cwd, options) {
 
   if (options.sharePath) {
     args.push(`--share=${options.sharePath}`);
+  }
+
+  if (options.resume) {
+    args.push(`--resume=${options.resume}`);
+  } else if (options.continue) {
+    args.push("--continue");
+  }
+
+  if (options.autopilot) {
+    args.push("--autopilot");
+  }
+
+  if (options.maxAutopilotContinues != null) {
+    args.push(`--max-autopilot-continues=${options.maxAutopilotContinues}`);
+  }
+
+  if (options.shareGist) {
+    args.push("--share-gist");
   }
 
   return new Promise((resolve) => {
