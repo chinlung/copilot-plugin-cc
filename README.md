@@ -1,9 +1,22 @@
 # GitHub Copilot Plugin for Claude Code
 
+[繁體中文版](README.zh-TW.md)
+
 Use GitHub Copilot CLI from within Claude Code sessions for code reviews or to delegate tasks.
 
 This plugin is for Claude Code users who want an easy way to leverage GitHub Copilot from the workflow
 they already have.
+
+## Origin & Motivation
+
+This project is a refactored fork of [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc), which was originally built around the OpenAI Codex CLI.
+
+Key changes from the upstream project:
+
+- **Rebranded from Codex to GitHub Copilot** — all commands, agents, skills, and scripts now target the GitHub Copilot CLI instead of Codex CLI.
+- **Model-agnostic architecture** — supports multiple model backends (Claude Opus 4.5, Claude Sonnet 4.5, GPT-5.2 Codex) rather than being tied to a single provider.
+- **Simplified command interface** — removed legacy flags (`--resume`, `--fresh`, `--effort`) in favor of a cleaner `--model` and `--background`/`--wait` API.
+- **Updated authentication** — uses `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` for flexible GitHub authentication.
 
 ## What You Get
 
