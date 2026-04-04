@@ -3,7 +3,7 @@
  */
 
 import { readJsonFile } from "./fs.mjs";
-import { binaryAvailable } from "./process.mjs";
+import { binaryAvailable, runCommand } from "./process.mjs";
 import { spawnCopilot } from "./copilot-runner.mjs";
 
 const MODEL_ALIASES = new Map([
@@ -41,7 +41,8 @@ export function getCopilotAvailability(cwd) {
 
 /**
  * Check Copilot auth status by looking for known token env vars
- * and verifying the binary works.
+ * and verifying the binary works.  Falls back to `gh auth token`
+ * when no explicit env var is set.
  * @param {string} cwd
  * @returns {{ available: boolean, loggedIn: boolean, detail: string }}
  */
@@ -66,10 +67,21 @@ export function getCopilotAuthStatus(cwd) {
     };
   }
 
+  // Fallback: derive token from gh CLI when already authenticated.
+  const gh = runCommand("gh", ["auth", "token"], { cwd });
+  if (gh.status === 0 && gh.stdout.trim()) {
+    process.env.GH_TOKEN = gh.stdout.trim();
+    return {
+      available: true,
+      loggedIn: true,
+      detail: "authenticated via gh auth token"
+    };
+  }
+
   return {
     available: true,
     loggedIn: false,
-    detail: "no COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN found in environment"
+    detail: "no COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN found in environment; gh auth also unavailable"
   };
 }
 

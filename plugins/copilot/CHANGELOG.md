@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 (2026-04-05)
+
+- Auth now falls back to `gh auth token` when no explicit token env var
+  (`COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, `GITHUB_TOKEN`) is set, so users
+  already authenticated with the GitHub CLI no longer need extra configuration.
+
 ## 1.1.0 (2026-03-31)
 
 - Restored `--resume <id>` and `--continue` for Copilot session management.
