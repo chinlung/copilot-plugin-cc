@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1 (2026-04-05)
+
+- Stop review gate parser is now lenient: matches ALLOW/BLOCK anywhere in
+  the output (case-insensitive, with or without colon).  Unparseable output
+  defaults to ALLOW instead of blocking the user for a format issue.
+
 ## 1.2.0 (2026-04-05)
 
 - Auth now falls back to `gh auth token` when no explicit token env var

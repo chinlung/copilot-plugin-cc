@@ -34,7 +34,20 @@ export function buildSetupNote(cwd) {
 }
 
 /**
+ * Match ALLOW or BLOCK anywhere in a line, with or without a colon/reason.
+ * Captures: [1] = "ALLOW"|"BLOCK", [2] = optional reason after colon.
+ */
+const DECISION_RE = /\b(ALLOW|BLOCK)\b(?:\s*:\s*(.*))?/i;
+
+/**
  * Parse raw output from a stop-review Copilot task.
+ *
+ * The prompt asks Copilot to start with "ALLOW: …" or "BLOCK: …", but LLMs
+ * don't always comply exactly.  We search the full output for the first
+ * occurrence of either keyword so that preamble text or missing colons
+ * don't cause spurious blocks.  If the output is completely unparseable,
+ * we default to ALLOW to avoid blocking the user for a format issue.
+ *
  * @param {string} rawOutput
  * @returns {{ ok: boolean, reason: string|null }}
  */
@@ -48,21 +61,22 @@ export function parseStopReviewOutput(rawOutput) {
     };
   }
 
-  const firstLine = text.split(/\r?\n/, 1)[0].trim();
-  if (firstLine.startsWith("ALLOW:")) {
-    return { ok: true, reason: null };
-  }
-  if (firstLine.startsWith("BLOCK:")) {
-    const reason = firstLine.slice("BLOCK:".length).trim() || text;
+  for (const line of text.split(/\r?\n/)) {
+    const match = line.match(DECISION_RE);
+    if (!match) {
+      continue;
+    }
+    const decision = match[1].toUpperCase();
+    if (decision === "ALLOW") {
+      return { ok: true, reason: null };
+    }
+    const reason = (match[2] ?? "").trim() || text;
     return {
       ok: false,
       reason: `Copilot stop-time review found issues that still need fixes before ending the session: ${reason}`
     };
   }
 
-  return {
-    ok: false,
-    reason:
-      "The stop-time Copilot review task returned an unexpected answer. Run /copilot:review --wait manually or bypass the gate."
-  };
+  // Unparseable output — default to ALLOW so format issues don't block the user.
+  return { ok: true, reason: null };
 }

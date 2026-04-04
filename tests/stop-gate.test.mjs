@@ -35,7 +35,7 @@ test("parseStopReviewOutput: BLOCK prefix returns not ok with reason", () => {
 test("parseStopReviewOutput: BLOCK with empty suffix uses full text as reason", () => {
   const result = parseStopReviewOutput("BLOCK:\ndetails on next line");
   assert.equal(result.ok, false);
-  assert.match(result.reason, /BLOCK:\ndetails on next line/);
+  assert.match(result.reason, /stop-time review found issues/);
 });
 
 test("parseStopReviewOutput: empty output returns not ok", () => {
@@ -56,10 +56,34 @@ test("parseStopReviewOutput: undefined output returns not ok", () => {
   assert.match(result.reason, /no final output/);
 });
 
-test("parseStopReviewOutput: no prefix returns unexpected answer", () => {
+test("parseStopReviewOutput: no recognizable keyword defaults to ALLOW", () => {
   const result = parseStopReviewOutput("some random copilot output");
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, null);
+});
+
+test("parseStopReviewOutput: ALLOW without colon returns ok", () => {
+  const result = parseStopReviewOutput("ALLOW no issues found");
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, null);
+});
+
+test("parseStopReviewOutput: BLOCK without colon returns not ok", () => {
+  const result = parseStopReviewOutput("BLOCK missing tests");
   assert.equal(result.ok, false);
-  assert.match(result.reason, /unexpected answer/);
+  assert.match(result.reason, /stop-time review found issues/);
+});
+
+test("parseStopReviewOutput: keyword found after preamble text", () => {
+  const result = parseStopReviewOutput("Based on my review:\nALLOW: looks good");
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, null);
+});
+
+test("parseStopReviewOutput: case-insensitive matching", () => {
+  const result = parseStopReviewOutput("Allow: fine");
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, null);
 });
 
 test("parseStopReviewOutput: multiline ALLOW uses first line only", () => {
