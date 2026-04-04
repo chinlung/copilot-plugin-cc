@@ -15,7 +15,7 @@
 - **從 Codex 轉換為 GitHub Copilot** — 所有命令、代理、技能和腳本現在都以 GitHub Copilot CLI 為目標，取代原本的 Codex CLI。
 - **模型無關架構** — 支援多種模型後端（Claude Opus 4.5、Claude Sonnet 4.5、GPT-5.2 Codex），不再綁定單一供應商。
 - **恢復並擴展命令介面** — 恢復了 `--resume`/`--continue` 用於 session 管理，新增 `--autopilot` 用於自主連續執行，以及 `--share`/`--share-gist` 用於 session 匯出，搭配既有的 `--model` 和 `--background`/`--wait` API。
-- **更新認證方式** — 使用 `COPILOT_GITHUB_TOKEN`、`GH_TOKEN` 或 `GITHUB_TOKEN` 進行彈性的 GitHub 認證。
+- **更新認證方式** — 使用 `COPILOT_GITHUB_TOKEN`、`GH_TOKEN` 或 `GITHUB_TOKEN` 進行彈性的 GitHub 認證，並自動支援已透過 GitHub CLI 登入的使用者（`gh auth token` fallback）。
 
 ## 功能概覽
 
@@ -28,7 +28,7 @@
 - **具有 Copilot 存取權限的 GitHub 帳號**
 - **GitHub Copilot CLI** 全域安裝（`npm install -g @github/copilot`）
 - **Node.js 22 或更新版本**
-- **認證：** 設定 `COPILOT_GITHUB_TOKEN`、`GH_TOKEN` 或 `GITHUB_TOKEN` 其中一個環境變數
+- **認證：** 設定 `COPILOT_GITHUB_TOKEN`、`GH_TOKEN` 或 `GITHUB_TOKEN` 其中一個環境變數，或直接使用 `gh auth login` 登入（插件會自動從 `gh auth token` 取得認證）
 
 ## 安裝
 
@@ -204,3 +204,24 @@ npm install -g @github/copilot
 ```bash
 /copilot:setup
 ```
+
+#### 停止時審查閘門（Stop-Time Review Gate）
+
+插件內建一個可選的**停止時審查閘門**，每當 Claude 停止回應時自動執行 Copilot 審查。如果上一輪回應包含程式碼變更且審查發現問題，閘門會阻止停止並要求你在結束 session 前修復問題。
+
+審查閘門**預設為關閉**。可依 workspace 個別啟用或停用：
+
+```bash
+/copilot:setup --enable-review-gate
+/copilot:setup --disable-review-gate
+```
+
+啟用後：
+
+- 每當 Claude 完成一輪回應，stop hook 會啟動 Copilot 任務審查上一輪的回應內容。
+- 如果上一輪只是狀態回報、setup 檢查或非編輯輸出，Copilot 會立即回傳 `ALLOW`。
+- 如果上一輪有程式碼變更且 Copilot 發現阻塞性問題，會回傳 `BLOCK` 並附上原因，系統會提示你修復問題後再停止。
+- 審查結果會記錄在插件的 `jobs/` 目錄中，方便事後查閱。
+
+> [!NOTE]
+> 審查閘門設定是依 workspace（基於 git 儲存庫根目錄）分別設定的。在一個專案中啟用不會影響其他專案。

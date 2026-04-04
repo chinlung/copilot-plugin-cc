@@ -16,7 +16,7 @@ Key changes from the upstream project:
 - **Rebranded from Codex to GitHub Copilot** — all commands, agents, skills, and scripts now target the GitHub Copilot CLI instead of Codex CLI.
 - **Model-agnostic architecture** — supports multiple model backends (Claude Opus 4.5, Claude Sonnet 4.5, GPT-5.2 Codex) rather than being tied to a single provider.
 - **Restored and extended command interface** — restored `--resume`/`--continue` for session management, added `--autopilot` for autonomous continuation, and `--share`/`--share-gist` for session export, alongside the `--model` and `--background`/`--wait` API.
-- **Updated authentication** — uses `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` for flexible GitHub authentication.
+- **Updated authentication** — uses `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` for flexible GitHub authentication, with automatic fallback to `gh auth token` for users already logged in with GitHub CLI.
 
 ## What You Get
 
@@ -29,7 +29,7 @@ Key changes from the upstream project:
 - **GitHub account with Copilot access.**
 - **GitHub Copilot CLI** installed globally (`npm install -g @github/copilot`)
 - **Node.js 22 or later**
-- **Authentication:** Set one of `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` environment variable
+- **Authentication:** Set one of `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` environment variable, or just be logged in with `gh auth login` (the plugin will automatically derive a token from `gh auth token`)
 
 ## Install
 
@@ -206,3 +206,24 @@ Examples:
 ```bash
 /copilot:setup
 ```
+
+#### Stop-Time Review Gate
+
+The plugin includes an optional **stop-time review gate** that automatically runs a Copilot review every time Claude stops responding. If the previous turn included code changes and the review finds issues, it blocks the stop and asks you to address them before ending the session.
+
+The review gate is **disabled by default**. Enable or disable it per workspace:
+
+```bash
+/copilot:setup --enable-review-gate
+/copilot:setup --disable-review-gate
+```
+
+When enabled:
+
+- Each time Claude finishes a turn, the stop hook spawns a Copilot task that reviews the last response.
+- If the previous turn was only a status update, setup check, or non-edit output, Copilot returns `ALLOW` immediately.
+- If the previous turn made code changes and Copilot finds blocking issues, it returns `BLOCK` with a reason, and you'll be prompted to fix the issues before stopping.
+- Review results are logged to the plugin's `jobs/` directory for later inspection.
+
+> [!NOTE]
+> The review gate setting is per-workspace (based on the git repository root). Enabling it in one project does not affect other projects.
